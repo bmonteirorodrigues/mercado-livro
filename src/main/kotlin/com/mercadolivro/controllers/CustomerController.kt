@@ -6,7 +6,6 @@ import com.mercadolivro.domain.CustomerModel
 import com.mercadolivro.services.CustomersService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import kotlin.reflect.jvm.internal.impl.utils.FunctionsKt
 import com.mercadolivro.extensions.*
 
 @RestController
@@ -16,30 +15,30 @@ class CustomerController(
 ){
 
     @GetMapping
-    fun getAll(@RequestParam name: String?): List<CustomerModel> {
-        return customersService.getAll(name)
-    }
+    fun getAll(@RequestParam name: String?): List<CustomerModel> =
+        customersService.getAll(name)
+
 
     @GetMapping("/{id}")
-    fun getCustomer(@PathVariable id: Int): CustomerModel {
-        return customersService.getCustomer(id)
-    }
+    fun getCustomer(@PathVariable id: Int): CustomerModel =
+        customersService.getById(id)
+
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun updateCustomer(@PathVariable id: Int, @RequestBody customer: PutCustomerRequest){
+    fun updateCustomer(@PathVariable id: Int, @RequestBody customer: PutCustomerRequest) =
         customersService.updateCustomer(customer.toCustomerModel(id))
-    }
+
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun deleteCustomer(@PathVariable id: Int){
+    fun deleteCustomer(@PathVariable id: Int) =
         customersService.deleteCustomer(id)
-    }
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    fun createCustomer(@RequestBody postCustomerRequest: PostCustomerRequest){
+    fun createCustomer(@RequestBody postCustomerRequest: PostCustomerRequest) =
         customersService.createCustomer(postCustomerRequest.toCustomerModel())
-    }
+
 }

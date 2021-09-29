@@ -17,10 +17,11 @@ class CustomersService(
     var customers = mutableListOf<CustomerModel>()
 
     fun getAll(name: String?): List<CustomerModel> {
+        name?.let { return customerRepository.findByNameContaining(name) }
         return customerRepository.findAll().toList()
     }
 
-    fun getCustomer(id: Int): CustomerModel {
+    fun getById(id: Int): CustomerModel {
         return customerRepository.findById(id).orElseThrow()
     }
 
