@@ -20,4 +20,18 @@ class BookService(
     fun getByStatus(status: BookStatus): List<BookModel>{
         return booksRepository.findByStatus(status)
     }
+
+    fun getById(id: Int): BookModel {
+        return booksRepository.findById(id).orElseThrow()
+    }
+
+    fun deleteById(id: Int){
+        if(!booksRepository.existsById(id)) throw Exception()
+        val book = booksRepository.findById(id).orElseThrow()
+            book.status = BookStatus.CANCELADO
+        booksRepository.save(book)
+    }
+
+    fun updateById(id: Int, book: BookModel){}
+
 }
