@@ -3,40 +3,38 @@ package com.mercadolivro.services
 import com.mercadolivro.controllers.requests.PostCustomerRequest
 import com.mercadolivro.controllers.requests.PutCustomerRequest
 import com.mercadolivro.domain.CustomerModel
+import com.mercadolivro.repository.CustomerRepository
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 
 @Service
-class CustomersService {
+class CustomersService(
+   val customerRepository: CustomerRepository
+) {
     var customers = mutableListOf<CustomerModel>()
 
     fun getAll(name: String?): List<CustomerModel> {
-        name?.let {
-            return customers.filter{it.name.contains(name, true)}
-        }
-        return customers
+        return customerRepository.findAll().toList()
     }
 
-    fun getCustomer(id: String): CustomerModel {
-        return customers.first { it.id == id }
+    fun getCustomer(id: Int): CustomerModel {
+        return customerRepository.findById(id).orElseThrow()
     }
 
     fun updateCustomer(customer: CustomerModel){
-        customers.first { it.id == customer.id }.let {
-            it.name = customer.name
-            it.email = customer.email
-        }
+        if(!customerRepository.existsById(customer.id!!)) throw Exception()
+        customerRepository.save(customer)
     }
 
-    fun deleteCustomer(id: String){
-        customers.removeIf{ it.id == id }
+    fun deleteCustomer(id: Int){
+        if(!customerRepository.existsById(id)) throw Exception()
+        customerRepository.deleteById(id)
     }
 
-    fun createCustomer(postCustomerRequest: CustomerModel){
-        val id: Int = if(customers.isNullOrEmpty()) 1 else (customers.last().id!!.toInt() + 1)
-        customers.add(CustomerModel(id.toString(),postCustomerRequest.name, postCustomerRequest.email))
+    fun createCustomer(customerModel: CustomerModel){
+        customerRepository.save(customerModel)
     }
-
 }
