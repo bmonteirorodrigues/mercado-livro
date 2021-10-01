@@ -1,5 +1,6 @@
 package com.mercadolivro.domain
 
+import com.mercadolivro.enums.CustomerStatus
 import org.springframework.context.annotation.Primary
 import javax.persistence.*
 import javax.persistence.GenerationType.IDENTITY
@@ -14,5 +15,14 @@ data class CustomerModel(
     var name: String,
 
     @Column
-    var email: String
-    )
+    var email: String,
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    var status: CustomerStatus? = null,
+
+    var cpf: String? = null
+    ){
+
+
+}

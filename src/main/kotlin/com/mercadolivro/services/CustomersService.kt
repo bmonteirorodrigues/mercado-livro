@@ -3,6 +3,7 @@ package com.mercadolivro.services
 import com.mercadolivro.controllers.requests.PostCustomerRequest
 import com.mercadolivro.controllers.requests.PutCustomerRequest
 import com.mercadolivro.domain.CustomerModel
+import com.mercadolivro.enums.CustomerStatus
 import com.mercadolivro.repository.CustomerRepository
 import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Service
@@ -12,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam
 
 @Service
 class CustomersService(
-   val customerRepository: CustomerRepository
+   val customerRepository: CustomerRepository,
+   val bookService: BookService
 ) {
     var customers = mutableListOf<CustomerModel>()
 
@@ -31,11 +33,14 @@ class CustomersService(
     }
 
     fun deleteCustomer(id: Int){
-        if(!customerRepository.existsById(id)) throw Exception()
-        customerRepository.deleteById(id)
+        val customer = customerRepository.findById(id).orElseThrow()
+            bookService.deleteByCustomer(customer)
+            customer.status = CustomerStatus.INATIVO
+            customerRepository.save(customer)
     }
 
     fun createCustomer(customerModel: CustomerModel){
+        println(customerModel.cpf)
         customerRepository.save(customerModel)
     }
 }

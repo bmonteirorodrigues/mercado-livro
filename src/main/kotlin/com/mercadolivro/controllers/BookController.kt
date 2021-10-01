@@ -2,14 +2,18 @@ package com.mercadolivro.controllers
 
 import com.mercadolivro.controllers.requests.PostBookRequest
 import com.mercadolivro.controllers.requests.PutBookRequest
+import com.mercadolivro.controllers.responses.BookResponse
 import com.mercadolivro.domain.BookModel
 import com.mercadolivro.enums.BookStatus
 import com.mercadolivro.extensions.toBookModel
+import com.mercadolivro.extensions.toResponse
 import com.mercadolivro.services.CustomersService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import com.mercadolivro.services.BookService
-import java.awt.print.Book
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 
 @RestController
 @RequestMapping("books")
@@ -26,13 +30,13 @@ class BookController(
     }
 
     @GetMapping
-    fun getAllBooks(): List<BookModel> =
-        bookService.getAllBooks().toList()
+    fun getAllBooks(@PageableDefault(page = 0, size = 10) pageable: Pageable): Page<BookResponse> =
+        bookService.getAllBooks(pageable).map { it.toResponse() }
 
 
     @GetMapping("actives")
-    fun getAllActiveBooks(): List<BookModel> =
-        bookService.getByStatus(BookStatus.ATIVO)
+    fun getAllActiveBooks(@PageableDefault(page = 0, size = 10) pageable: Pageable): Page<BookResponse> =
+        bookService.getByStatus(BookStatus.ATIVO, pageable).map { it.toResponse() }
 
     @GetMapping("/{id}")
     fun getById(@PathVariable id: Int): BookModel =
@@ -45,7 +49,7 @@ class BookController(
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun updateById(@PathVariable id: Int, @RequestBody book: PutBookRequest) {
-        //  bookService.updateById(id, PutBookRequest.toBookModel(book))
-    }
+    fun updateById(@PathVariable id: Int, @RequestBody putBookRequest: PutBookRequest) =
+        bookService.updateById(id, putBookRequest.toBookModel(bookService.getById(id)))
+
 }

@@ -2,6 +2,7 @@ package com.mercadolivro.controllers
 
 import com.mercadolivro.controllers.requests.PostCustomerRequest
 import com.mercadolivro.controllers.requests.PutCustomerRequest
+import com.mercadolivro.controllers.responses.CustomerResponse
 import com.mercadolivro.domain.CustomerModel
 import com.mercadolivro.services.CustomersService
 import org.springframework.http.HttpStatus
@@ -15,13 +16,13 @@ class CustomerController(
 ){
 
     @GetMapping
-    fun getAll(@RequestParam name: String?): List<CustomerModel> =
-        customersService.getAll(name)
+    fun getAll(@RequestParam name: String?): List<CustomerResponse> =
+        customersService.getAll(name).map { it.toResponse() }
 
 
     @GetMapping("/{id}")
-    fun getCustomer(@PathVariable id: Int): CustomerModel =
-        customersService.getById(id)
+    fun getCustomer(@PathVariable id: Int): CustomerResponse =
+        customersService.getById(id).toResponse()
 
 
     @PutMapping("/{id}")

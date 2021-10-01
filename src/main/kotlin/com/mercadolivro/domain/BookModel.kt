@@ -17,11 +17,18 @@ data class BookModel(
     @Column
     var price: BigDecimal,
 
-    @Column
-    @Enumerated(EnumType.STRING)
-    var status: BookStatus? = null,
-
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    var customer: CustomerModel? = null
-)
+    var customer: CustomerModel? = null,
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    var status: BookStatus? = null
+){
+    companion object{
+            fun statusChangeAllowed(status: BookStatus): Boolean {
+            if (status == BookStatus.DELETADO || status == BookStatus.CANCELADO || status == BookStatus.CANCELADO) return false
+            return true
+        }
+    }
+}
